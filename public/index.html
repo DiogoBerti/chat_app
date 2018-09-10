@@ -8,5 +8,20 @@
 
 		<p>Welcome to the chat App</p>
 
+		<script src="/socket.io/socket.io.js"></script>
+		<script type="text/javascript">
+			//Pode ser utilizado quando o node forçar o socket
+			let socket = io();
+
+			// Ao logar no server roda essa funcão...
+			socket.on('connect', () =>{
+				console.log('Connected to Server');
+			});
+
+			socket.on('disconnect', () =>{
+				alert('Disconnected from server');
+			});
+
+		</script>
 	</body>
 </html>
