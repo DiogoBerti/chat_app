@@ -23,4 +23,19 @@ socket.on('disconnect', function(){
 // Recebendo um email vindo do emit do server..
 socket.on('newMessage', function(data){
 	console.log(data);
+	var li = $('<li></li>');
+	li.text(`${data.from}: ${data.text}`);
+	$('#messages').append(li);
+});
+
+
+// Sobrescreve o comportamento...
+$('#message-form').on('submit', function(event){
+	event.preventDefault();
+	socket.emit('createMessage', {
+		from: "User",
+		text: $('[name=message]').val()
+	}, function(){
+
+	});
 });
