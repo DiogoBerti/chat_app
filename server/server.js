@@ -13,27 +13,30 @@ var io = socketIO(server);
 // usando o join, podemos juntar os valores para chegar nos locais...
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
+
+const {generateMessage} = require('./utils/message');
+
+
 // Setando o public para o express
 app.use(express.static(publicPath));
 
 // Checa se houve conexão pelo socket
 io.on('connection', (socket) =>{
 	console.log('new user connected');
+	
+	socket.emit('newMessage', generateMessage("Admin","Welcome to the Chat"));
+
+	socket.broadcast.emit('newMessage', generateMessage("Admin","A New User is on!"));
+
+
 	// Checa se o usuario se desconectou da pagina (verificar script do front)
 	socket.on('disconnect', () =>{
 		console.log('User Disconnected');
 	});
 
-	// Emite um chamado para o frontend
-	socket.emit('newEmail', {
-		from: "mike@example.com",
-		text: "what is going on?",
-		createdAt: 123
-	});
-
-	// Recebe o createEmail vindo do front, sendo "data" os valores recebidos
-	socket.on('createEmail', (data) =>{
-		console.log(data);
+	socket.on('createMessage', (message) =>{
+		console.log("Created Message: ",message);
+		io.emit('newMessage', generateMessage(message.from, message.text));
 	});
 
 });
