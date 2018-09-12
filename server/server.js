@@ -25,19 +25,15 @@ io.on('connection', (socket) =>{
 	console.log('new user connected');
 	
 	socket.emit('newMessage', generateMessage("Admin","Welcome to the Chat"));
-
+	
 	socket.broadcast.emit('newMessage', generateMessage("Admin","A New User is on!"));
-
-
 	// Checa se o usuario se desconectou da pagina (verificar script do front)
 	socket.on('disconnect', () =>{
 		console.log('User Disconnected');
 	});
 
-	socket.on('createMessage', (message, callback) =>{
-		console.log("Created Message: ",message);
-		io.emit('newMessage', generateMessage(message.from, message.text));
-		callback("This is from the server");
+	socket.on('createLocationMessage', (coords) =>{
+		io.emit('newMessage', generateMessage('Admin', `latitude: ${coords.latitude}, longitude: ${coords.longitude}`))
 	});
 
 });

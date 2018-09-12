@@ -4,8 +4,6 @@ var generateMessage = (from, text)=>{
 		text: text,
 		createdAt: new Date().getTime()
 	};
-
 };
-
 
 module.exports = {generateMessage};

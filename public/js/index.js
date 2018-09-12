@@ -4,21 +4,11 @@ let socket = io();
 // Ao logar no server roda essa funcão...
 socket.on('connect', function(){
 	console.log('Connected to Server');
-
-	// // Envia um objeto para o server, que vai receber na funcão on...
-	// socket.emit('createEmail', {
-	// 	to: "diogo.cordeiro@teste.com",
-	// 	text: "Testando o Teste"
-	// });
-
-
 });
 
 socket.on('disconnect', function(){
 	alert('Disconnected from server');
 });
-
-
 
 // Recebendo um email vindo do emit do server..
 socket.on('newMessage', function(data){
@@ -38,4 +28,22 @@ $('#message-form').on('submit', function(event){
 	}, function(){
 
 	});
+});
+
+var locationButton = $('#send_location');
+locationButton.on('click', function(){
+	if(!navigator.geolocation){
+		return alert('Geolocation not supported by your browser.');
+	}
+
+	navigator.geolocation.getCurrentPosition(function(postion){
+		console.log(postion);
+		socket.emit('createLocationMessage', {
+			latitude: postion.coords.latitude,
+			longitude: postion.coords.longitude
+		});
+	}, function(error){
+		alert('Unable to fetch the location... ', error);
+	});
+
 });
