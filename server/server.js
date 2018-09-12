@@ -23,6 +23,19 @@ io.on('connection', (socket) =>{
 	socket.on('disconnect', () =>{
 		console.log('User Disconnected');
 	});
+
+	// Emite um chamado para o frontend
+	socket.emit('newEmail', {
+		from: "mike@example.com",
+		text: "what is going on?",
+		createdAt: 123
+	});
+
+	// Recebe o createEmail vindo do front, sendo "data" os valores recebidos
+	socket.on('createEmail', (data) =>{
+		console.log(data);
+	});
+
 });
 
 
