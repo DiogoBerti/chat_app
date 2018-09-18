@@ -4,6 +4,8 @@
 		<meta charset="utf-8">
 		<title>Chat App</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.0/mustache.js"></script>
 		<link rel="stylesheet" type="text/css" href="/css/styles.css">
 	</head>
 	<body class="chat">
@@ -27,6 +29,32 @@
 			
 		</div>
 		
+		<!-- Templates para usar com o Mustache -->
+		<script id="message_template" type="text/template">
+			<li class="message">
+				<div class="message__title">
+					<h4>{{from}}</h4>
+					<span>{{timeStamp}}</span>
+				</div>
+				<div class="message__body">
+					<p>{{text}}</p>
+				</div>
+			</li>
+		</script>
+
+		<script id="location_template" type="text/template">
+			<li class="message">
+				<div class="message__title">
+					<h4>{{from}}</h4>
+					<span>{{timeStamp}}</span>
+				</div>
+				<div class="message__body">
+					<p><a href="{{url}}" target="_blank">My Current Location</a></p>
+				</div>
+			</li>
+		</script>
+
+
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/js/index.js"></script>
