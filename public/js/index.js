@@ -1,6 +1,24 @@
 //Pode ser utilizado quando o node forçar o socket
 let socket = io();
 
+function scrollToBottom(){
+	// Função que faz o scroll automatico quando as mensagens são inseridas e o usuario está perto do fim do frame
+	// Selectors 
+	var messages = $('#messages');
+	var newMessage = messages.children('li:last-child'); //Busca o ultimo li dentro de messages...
+	// Heights
+	var clientHeight = messages.prop('clientHeight');
+	var scrollTop = messages.prop('scrollTop');
+	var scrollHeight = messages.prop('scrollHeight');
+
+	var newMessageHeight = newMessage.innerHeight();
+	var lastMessageHeight = newMessage.prev().innerHeight();
+
+	if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
+		messages.scrollTop(scrollHeight);
+	}
+}
+
 // Ao logar no server roda essa funcão...
 socket.on('connect', function(){
 	console.log('Connected to Server');
@@ -21,6 +39,7 @@ socket.on('newMessage', function(data){
 	}
 	var html = Mustache.render(template, vals);
 	$('#messages').append(html);
+	scrollToBottom();
 
 });
 
@@ -36,7 +55,7 @@ socket.on('newLocationMessage', function(message){
 	}
 	var html = Mustache.render(template, vals);
 	$('#messages').append(html);
-
+	scrollToBottom();
 });
 
 
