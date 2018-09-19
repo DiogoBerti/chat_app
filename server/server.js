@@ -10,6 +10,9 @@ var server = http.createServer(app);
 // Traz o socket para dentro do server
 var io = socketIO(server);
 
+// Para checar se é uma string...
+const {isRealString} = require('./utils/validation');
+
 // usando o join, podemos juntar os valores para chegar nos locais...
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
@@ -24,9 +27,20 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) =>{
 	console.log('new user connected');
 	
-	socket.emit('newMessage', generateMessage("Admin","Welcome to the Chat"));
+	socket.on('join', (params, callback) =>{
+		if(!isRealString(params.name) || !isRealString(params.room)){
+			callback('Name and Room name are required');
+		}
+
+		socket.join(params.room);
+		// socket.leave(params.room);
+
+		socket.emit('newMessage', generateMessage("Admin","Welcome to the Chat"));
+		socket.broadcast.to(params.room).emit('newMessage', generateMessage("Admin",`${params.name} has Joined!`));
+		callback();
+	});
+
 	
-	socket.broadcast.emit('newMessage', generateMessage("Admin","A New User is on!"));
 	// Checa se o usuario se desconectou da pagina (verificar script do front)
 	socket.on('disconnect', () =>{
 		console.log('User Disconnected');

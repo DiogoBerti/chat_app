@@ -22,6 +22,18 @@ function scrollToBottom(){
 // Ao logar no server roda essa funcão...
 socket.on('connect', function(){
 	console.log('Connected to Server');
+	// Pega os valores da url...
+	var params = $.deparam(window.location.search);
+
+	socket.emit('join', params, function(error){
+		if(error){
+			// Redireciona para a pagina de login
+			alert(error);
+			window.location.href = '/'
+		}else{
+			console.log('no Error!');
+		}
+	});
 });
 
 socket.on('disconnect', function(){
