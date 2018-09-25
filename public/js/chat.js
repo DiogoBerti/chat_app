@@ -36,8 +36,20 @@ socket.on('connect', function(){
 	});
 });
 
+socket.on('updateUserList', function(users){
+	// Adiciona os usuarios na barra lateral...
+	var ol = jQuery('<ul></ul>');
+
+	users.forEach(function(user){
+		ol.append(jQuery('<li></li>').text(user));
+	});
+	$('#users').html(ol);
+});
+
+
 socket.on('disconnect', function(){
-	alert('Disconnected from server');
+	// alert('Disconnected from server');
+
 });
 
 // Recebendo um email vindo do emit do server..

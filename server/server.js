@@ -10,6 +10,7 @@ var server = http.createServer(app);
 // Traz o socket para dentro do server
 var io = socketIO(server);
 
+
 // Para checar se é uma string...
 const {isRealString} = require('./utils/validation');
 
@@ -19,6 +20,8 @@ const port = process.env.PORT || 3000;
 
 const {generateMessage, generateLocationMessage} = require('./utils/message');
 
+const {Users} = require('./utils/users');
+var users = new Users();
 
 // Setando o public para o express
 app.use(express.static(publicPath));
@@ -29,11 +32,19 @@ io.on('connection', (socket) =>{
 	
 	socket.on('join', (params, callback) =>{
 		if(!isRealString(params.name) || !isRealString(params.room)){
-			callback('Name and Room name are required');
+			return callback('Name and Room name are required');
 		}
 
 		socket.join(params.room);
 		// socket.leave(params.room);
+
+		// Remove o usuario de outro room
+		users.removeUser(socket.id);
+		// Adiciona usuario...
+		users.addUser(socket.id, params.name, params.room);
+
+		// Emite Mensagens para avisar quais usuario entraram e atualiza a lista do room
+		io.to(params.room).emit('updateUserList', users.getUserList(params.room));
 
 		socket.emit('newMessage', generateMessage("Admin","Welcome to the Chat"));
 		socket.broadcast.to(params.room).emit('newMessage', generateMessage("Admin",`${params.name} has Joined!`));
@@ -44,6 +55,14 @@ io.on('connection', (socket) =>{
 	// Checa se o usuario se desconectou da pagina (verificar script do front)
 	socket.on('disconnect', () =>{
 		console.log('User Disconnected');
+		// Ao desconectar, atualiza a lista de usuarios...
+		var user = users.removeUser(socket.id);
+
+		if(user){
+			console.log(user);
+			io.to(user[0].room).emit('updateUserList', users.getUserList(user[0].room));
+			socket.broadcast.to(user[0].room).emit('newMessage', generateMessage("Admin",`${user[0].name} has left`));
+		}
 	});
 
 	socket.on('createMessage', (message, callback) =>{
